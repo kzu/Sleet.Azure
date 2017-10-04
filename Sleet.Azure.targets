@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PushDependsOn Condition="'$(SleetInit)' == 'true'">Init</PushDependsOn>
+  </PropertyGroup>
+
+  <!--
+    Push @(Package) items to the configured Azure-powered static feed.
+  -->
+  <Target Name="Push" DependsOnTargets="$(PushDependsOn)">
+    <Error Condition="'@(Package)' == ''" Text="%40(Package) is empty. Nothing to push." />
+
+    <!-- Force push packages -->
+    <Exec Command='"$(Sleet)" push "%(Package.FullPath)" -f -s feed -c $(_SleetConfig)' />
+  </Target>
+
+  <!--
+    Initializes the Azure-powered static feed if it's not already valid.
+  -->
+  <Target Name="Init">
+    <!-- First try to determine if the feed is valid -->
+    <Exec Command='"$(Sleet)" validate -s feed -c $(_SleetConfig)' IgnoreExitCode="true">
+      <Output PropertyName='_ValidateExitCode' TaskParameter='ExitCode'/>
+    </Exec>
+    <!-- if not, initialize it -->
+    <Exec Command='"$(Sleet)" init -s feed -c $(_SleetConfig)' Condition="$(_ValidateExitCode) != '0'" />
+  </Target>
+
+  <Target Name="_SleetValidateStorage" BeforeTargets="Init;Push">
+    <Error Condition="'$(StorageAccount)' == ''" Text="StorageAccount is not set via property or environment variable. Should be the Azure Storage account name." />
+    <Error Condition="'$(StorageAccessKey)' == ''" Text="StorageAccessKey is not set via property or environment variable. Should be the Azure Storage access key." />
+    <Error Condition="'$(StorageContainer)' == ''" Text="StorageContainer is not set via property or environment variable. Should be the Azure Storage blob container name." />
+  </Target>
+
+  <Target Name="_SleetConfigCreate" AfterTargets="_SleetValidateStorage">
+    <PropertyGroup>
+      <_SleetConfig>$([System.IO.Path]::GetTempFileName())</_SleetConfig>
+    </PropertyGroup>
+
+    <WriteLinesToFile Lines='{
+  "username": "",
+  "useremail": "",
+  "sources": [
+    {
+      "name": "feed",
+      "type": "azure",
+      "path": "https://$(StorageAccount).blob.core.windows.net/$(StorageContainer)/",
+      "container": "$(StorageContainer)",
+      "connectionString": "DefaultEndpointsProtocol=https%3BAccountName=$(StorageAccount)%3BAccountKey=$(StorageAccessKey)%3BEndpointSuffix=core.windows.net"
+    }
+  ]
+}' File='$(_SleetConfig)' Overwrite='true' />
+  </Target>
+
+  <Target Name="_SleetConfigDelete" AfterTargets="Init;Push">
+    <Delete Files="$(_SleetConfig)" Condition="Exists('$(_SleetConfig)')" />
+  </Target>
+</Project>

@@ -1,0 +1,32 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="build\corebuild.props" />
+
+  <PropertyGroup>
+    <PackageId>Sleet.Azure</PackageId>
+    <PackageVersion>0.1.0</PackageVersion>
+
+    <Title>$(PackageId)</Title>
+    <Description>$(PackageId)</Description>
+    <Authors>kzu</Authors>
+    <Summary>Allows pushing nuget packages to Azure storage-backed feeds via MSBuild.</Summary>
+    <Tags>msbuild nuget azure</Tags>
+
+    <PackOnBuild>true</PackOnBuild>
+    <InferPackageContents>false</InferPackageContents>
+    <PackageOutputPath>$(MSBuildProjectDirectory)</PackageOutputPath>
+    <EmitNuspec>false</EmitNuspec>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NuGet.Build.Packaging" Version="*" />
+    <PackageFile Include="Sleet" Version="2.1.0" Kind="Dependency" />
+    <PackageFile Include="Sleet.Azure.props" Kind="Build" />
+    <PackageFile Include="Sleet.Azure.targets" Kind="Build" />
+  </ItemGroup>
+
+  <Target Name="Configure" DependsOnTargets="Restore" />
+
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+  
+  <Import Project="build\corebuild.targets" />
+</Project>
