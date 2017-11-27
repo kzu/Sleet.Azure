@@ -13,7 +13,7 @@
     <Tags>msbuild nuget azure</Tags>
     <PackageProjectUrl>https://github.com/kzu/Sleet.Azure</PackageProjectUrl>
     <PackageIconUrl>https://emgartenstatic.blob.core.windows.net/nupkgs/icons/sleet.png</PackageIconUrl>
-    <PackageReleaseNotes>$([System.IO.File]::ReadAllText('README.md'))</PackageReleaseNotes>
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\README.md'))</PackageReleaseNotes>
 
     <PackOnBuild>true</PackOnBuild>
     <PackageOutputPath>$(MSBuildProjectDirectory)</PackageOutputPath>
