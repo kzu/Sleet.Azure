@@ -20,6 +20,7 @@
     <EmitNuspec>false</EmitNuspec>
     <InferPackageContents>false</InferPackageContents>
 
+    <GitSkipCache>true</GitSkipCache>
     <SleetInit>false</SleetInit>
   </PropertyGroup>
 
