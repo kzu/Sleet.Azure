@@ -1,5 +1,6 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="build\corebuild.props" />
+  <Import Project="Sleet.Azure.props" />
 
   <PropertyGroup>
     <PackageId>Sleet.Azure</PackageId>
@@ -12,16 +13,23 @@
     <Tags>msbuild nuget azure</Tags>
     <PackageProjectUrl>https://github.com/kzu/Sleet.Azure</PackageProjectUrl>
     <PackageIconUrl>https://emgartenstatic.blob.core.windows.net/nupkgs/icons/sleet.png</PackageIconUrl>
-    
+    <PackageReleaseNotes>$([System.IO.File]::ReadAllText('README.md'))</PackageReleaseNotes>
+
     <PackOnBuild>true</PackOnBuild>
-    <InferPackageContents>false</InferPackageContents>
     <PackageOutputPath>$(MSBuildProjectDirectory)</PackageOutputPath>
     <EmitNuspec>false</EmitNuspec>
-    <PackageReleaseNotes>$([System.IO.File]::ReadAllText('README.md'))</PackageReleaseNotes>
+    <InferPackageContents>false</InferPackageContents>
+
+    <SleetInit>false</SleetInit>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NuGet.Build.Packaging" Version="*" />
+    <PackageReference Include="GitInfo" Version="*" PrivateAssets="all" />
+    <PackageReference Include="NuGet.Build.Packaging" Version="*" PrivateAssets="all" />
+    <PackageReference Include="Sleet" Version="2.1.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageFile Include="Sleet" Version="2.1.0" Kind="Dependency" />
     <PackageFile Include="Sleet.Azure.props" Kind="Build" />
     <PackageFile Include="Sleet.Azure.targets" Kind="Build" />
@@ -30,6 +38,19 @@
   <Target Name="Configure" DependsOnTargets="Restore" />
 
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+
+  <Target Name="_AddPackage" BeforeTargets="Push" DependsOnTargets="GetPackageTargetPath">
+    <ItemGroup>
+      <Package Include="@(PackageTargetPath)" />
+    </ItemGroup>
+  </Target>
   
+  <Target Name="_SetVersion" BeforeTargets="GetPackageVersion" DependsOnTargets="GitVersion">
+    <PropertyGroup>
+      <PackageVersion>$(GitSemVerMajor).$(GitSemVerMinor).$(GitSemVerPatch)$(GitSemVerDashLabel)</PackageVersion>
+    </PropertyGroup>
+  </Target>
+
+  <Import Project="Sleet.Azure.targets" />
   <Import Project="build\corebuild.targets" />
 </Project>
