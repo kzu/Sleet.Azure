@@ -22,6 +22,8 @@
 
     <GitSkipCache>true</GitSkipCache>
     <SleetInit>false</SleetInit>
+    <StorageAccount>kzu</StorageAccount>
+    <StorageContainer>nuget</StorageContainer>
   </PropertyGroup>
 
   <ItemGroup>
