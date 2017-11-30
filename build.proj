@@ -40,7 +40,9 @@
 
   <Target Name="Configure" DependsOnTargets="Restore" />
 
-  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" />
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn);_SetVersion">
+    <Message Text="##vso[build.updatebuildnumber]$(PackageVersion)" Importance="high" Condition="'$(TF_BUILD)' == 'true'" />  
+  </Target>
 
   <Target Name="_AddPackage" BeforeTargets="Push" DependsOnTargets="GetPackageTargetPath">
     <ItemGroup>
