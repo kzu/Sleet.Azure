@@ -34,7 +34,7 @@ You specify the packages to push via the `Package` item group:
 
 ```xml
 <ItemGroup>
-    <Package Include="bin\*.nupkg" >
+    <Package Include="bin\*.nupkg" />
 </ItemGroup>
 ```
 
