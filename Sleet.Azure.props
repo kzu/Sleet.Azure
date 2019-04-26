@@ -13,6 +13,6 @@
       Defaults to 'true', which is expensive and can safely be 
       turned to 'false' after the first init/push operation.
      -->
-    <SleetInit>true</SleetInit>
+    <SleetInit Condition="'$(SleetInit)' == ''">true</SleetInit>
   </PropertyGroup>
 </Project>
